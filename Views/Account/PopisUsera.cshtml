@@ -3,6 +3,7 @@
 @model IEnumerable<ApplicationUser>
 @{
     ViewData["Title"] = "Popis korisnika";
+    string klasa = "";
 }
 
 <h1 class="alert alert-info">Popis korisnika</h1>
@@ -83,15 +84,36 @@ else
     <div class="card">
         Nema još nikakvih korisnika u sustavu!
     </div>
-}
-
+}  
 <div class="pagination">
-  <a href="#">&laquo;</a>
-  <a href="#">1</a>
-  <a href="#" class="active">2</a>
-  <a href="#">3</a>
-  <a href="#">4</a>
-  <a href="#">5</a>
-  <a href="#">6</a>
-  <a href="#">&raquo;</a>
+
+    @if(ViewBag.Aktivna != 1)
+    {
+        ViewBag.Prethodna = ViewBag.Aktivna - 1;
+        @Html.ActionLink(HttpUtility.HtmlDecode("&laquo;"), "PopisUsera", new {  page=ViewBag.Prethodna }, new {@class=@klasa}) 
+    }
+      
+    @for (int str = 1; str <= @ViewBag.BrojStranica; str++)
+    {
+        if (ViewBag.Aktivna == str)
+        {
+            klasa = "active";
+        }
+        else
+        {
+            klasa = "";
+        }
+        ViewBag.Stranica = str;
+        @Html.ActionLink("  "+@str+"  ", "PopisUsera", new {  page=str }, new {@class=@klasa})
+        @Html.Label(" ")
+        
+    }
+
+    
+
+    @if(ViewBag.Aktivna < ViewBag.Stranica)
+    {
+        ViewBag.Sljedeca = ViewBag.Aktivna + 1;
+        @Html.ActionLink(HttpUtility.HtmlDecode("&raquo;"), "PopisUsera", new {  page=ViewBag.Sljedeca }, new {@class=@klasa}) 
+    }
 </div>
