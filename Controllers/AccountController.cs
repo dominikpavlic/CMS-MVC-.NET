@@ -85,9 +85,35 @@ namespace CMSProductSystem.Controllers
         }
 
 
-        public IActionResult PopisUsera()
+        public IActionResult PopisUsera(int page)
         {
             var users = userManager.Users;
+
+            double BrojRedaka = users.ToList().Count;
+            int BrojStranica = (int)Math.Ceiling(BrojRedaka / 5);
+
+            ViewBag.BrojStranica = BrojStranica;
+            int aktivna;
+
+            //double BrojRedaka = modelDb.Count;
+            //int BrojStranica = (int)Math.Ceiling(BrojRedaka / 5);
+
+            //ViewBag.BrojStranica = BrojStranica;
+            //int aktivna;
+
+            if (page == 0 || page == 1)
+            {
+                users = users.Take(5);
+                aktivna = 1;
+            }
+            else
+            {
+                users = users.Skip((page - 1) * 5).Take(5);
+                aktivna = page;
+            }
+            ViewBag.Aktivna = aktivna;
+
+
             return View(users);
         }
 
