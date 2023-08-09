@@ -30,7 +30,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
-        public IActionResult KategorijaProizvoda()
+        public IActionResult KategorijaProizvoda(int CategoryID)
         {
 
         List<SelectListItem> KategorijaPopis = new List<SelectListItem>
@@ -39,7 +39,16 @@ namespace CMSProductSystem.Controllers
         };
         KategorijeLista(KategorijaPopis, 0);
             ViewBag.KategorijaPopis=KategorijaPopis;
-            return View();
+
+            List<ProizvodiKategorije> model = (from p in _db.Proizvod
+                                               join k in _db.Kategorija
+                                               on p.CategoryID equals k.ID
+                                               select new ProizvodiKategorije { ProizvodPodaci = p, NazivKategorije = k.Naziv }).ToList();
+            if(CategoryID != 0)
+            {
+                model = model.Where(p => p.ProizvodPodaci.CategoryID == CategoryID).ToList();
+            }
+            return View(model);
         }
 
         public IActionResult CreateProizvod()
