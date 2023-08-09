@@ -1,0 +1,66 @@
+﻿@using System.Web
+@using System.Web
+@model IEnumerable<CMSProductSystem.Models.ProizvodiKategorije>
+@{
+    ViewData["Title"] = "PopisKnjiga";
+    string klasa = "";
+}
+
+<h4 class="alert alert-info">Popis proizvoda</h4>
+
+<p>
+    @if (TempData["poruka"] != null)
+    {
+        <p class="btn btn-success">@TempData["poruka"]</p>
+    }
+</p>
+
+<table class="table tablicauserifont table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProizvodPodaci.ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProizvodPodaci.Naziv)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProizvodPodaci.Opis)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NazivKategorije)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.ProizvodPodaci.Slika)
+            </th>
+            <th>Akcija</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProizvodPodaci.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProizvodPodaci.Naziv)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProizvodPodaci.Opis)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NazivKategorije)
+                </td> 
+                <td>
+                    <img class="slikaokvir"  src="/@item.ProizvodPodaci.Slika" width="158" height="83" />
+                </td>                  
+                <td>
+                     @Html.ActionLink(HttpUtility.HtmlDecode("&#x270E; Ažuriraj"), "EditProizvod", new {  id=item.ProizvodPodaci.ID }, new {@class = "btn btn-primary btnakcija" })
+                    @Html.ActionLink(HttpUtility.HtmlDecode("&#x26B2; Pogledaj"), "DetailsProizvod", new {  id=item.ProizvodPodaci.ID }, new {@class = "btn btn-info btnakcija" })
+                    @Html.ActionLink(HttpUtility.HtmlDecode("&#x2715; Briši"), "DeleteProizvod", new {  id=item.ProizvodPodaci.ID }, new {@class = "btn btn-danger btnakcija" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p><a href="CreateProizvod" class = "btn btn-warning btnprikaz">&#x2719; Novi proizvod</a></p>
