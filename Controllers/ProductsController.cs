@@ -1,8 +1,10 @@
 ﻿using CMSProductSystem.Data;
 using CMSProductSystem.Models;
 using CMSProductSystem.ModelsDB;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace CMSProductSystem.Controllers
 {
@@ -20,16 +22,70 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
-        public IActionResult Proizvodi()
+
+        [Route("api/proizvodi/{id?}")]
+        public IActionResult PopisProizvodaApi(int? id)
+        {
+            List<ProizvodiKategorije> modelDb = (from p in _db.Proizvod
+                                               join k in _db.Kategorija
+                                               on p.CategoryID equals k.ID
+                                               select new ProizvodiKategorije { ProizvodPodaci = p, NazivKategorije = k.Naziv }).ToList();
+
+            //List<Proizvod> modelDb = (from p in _db.Proizvod select p).ToList();
+
+            if (id != 0 && id != null)
+            {
+                modelDb = modelDb.Where(p => p.ProizvodPodaci.ID.Equals(id)).ToList();
+            }
+
+            List<ProizvodDetailViewModel> model =  new List<ProizvodDetailViewModel>(); 
+
+            foreach (var stavkaDb in modelDb)
+            {
+                ProizvodDetailViewModel stavka = new ProizvodDetailViewModel();
+                stavka.ID = stavkaDb.ProizvodPodaci.ID;
+                stavka.Naziv = stavkaDb.ProizvodPodaci.Naziv;
+                stavka.Opis = stavkaDb.ProizvodPodaci.Opis;
+                stavka.Kolicina = stavkaDb.ProizvodPodaci.Kolicina;
+                stavka.Cijena = stavkaDb.ProizvodPodaci.Cijena;
+                stavka.Slika = stavkaDb.ProizvodPodaci.Slika;
+                stavka.KategorijaNaziv = stavkaDb.NazivKategorije;
+                model.Add(stavka);
+            }
+
+
+            return Json(model);
+        }
+
+        [Authorize(Roles = "Administratori,Korisnici,Operateri")]
+        public IActionResult Proizvodi(int page)
         {
             List<ProizvodiKategorije> model = (from p in _db.Proizvod
                                     join k in _db.Kategorija
                                     on p.CategoryID equals k.ID
                                     select new ProizvodiKategorije { ProizvodPodaci = p, NazivKategorije = k.Naziv }).ToList();
 
+            double BrojRedaka = model.Count;
+            int BrojStranica = (int)Math.Ceiling(BrojRedaka / 5);
+
+            ViewBag.BrojStranica = BrojStranica;
+            int aktivna;
+
+            if (page == 0 || page == 1)
+            {
+                model = model.Take(5).ToList();
+                aktivna = 1;
+            }
+            else
+            {
+                model = model.Skip((page - 1) * 5).Take(5).ToList();
+                aktivna = page;
+            }
+            ViewBag.Aktivna = aktivna;
+
             return View(model);
         }
-
+        [Authorize(Roles = "Administratori,Korisnici,Operateri")]
         public IActionResult KategorijaProizvoda(int CategoryID)
         {
 
@@ -51,12 +107,15 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         public IActionResult CreateProizvod()
         {            
             Proizvod model = new Proizvod();
             KategorijeLista(model.KategorijaLista, 0);
             return View(model);
         }
+
+        [Authorize(Roles = "Administratori")]
         [HttpPost]
         public IActionResult CreateProizvod(Proizvod model)
         {
@@ -104,7 +163,7 @@ namespace CMSProductSystem.Controllers
             }
             return View(model);
         }
-
+        [Authorize(Roles = "Administratori,Korisnici,Operateri")]
         public IActionResult DetailsProizvod(int id)
         {
             ProizvodiKategorije model = (from p in _db.Proizvod
@@ -115,6 +174,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         public IActionResult EditProizvod(int id)
         {
             Proizvod model = (from p in _db.Proizvod                                       
@@ -124,6 +184,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         [HttpPost]
         public IActionResult EditProizvod(Proizvod model)
         {
@@ -183,6 +244,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         public IActionResult DeleteProizvod(int id)
         {
             Proizvod model = (from p in _db.Proizvod
@@ -192,7 +254,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
-
+        [Authorize(Roles = "Administratori")]
         public IActionResult DeleteProizvodConfirm(int id)
         {
             Proizvod model = (from p in _db.Proizvod
