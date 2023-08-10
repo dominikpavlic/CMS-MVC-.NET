@@ -1,4 +1,5 @@
 ﻿using CMSProductSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,12 +23,14 @@ namespace CMSProductSystem.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Administratori")]
         public IActionResult Register()
         {
             RegisterViewModel model = new RegisterViewModel();
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -84,7 +87,7 @@ namespace CMSProductSystem.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
+        [Authorize(Roles = "Administratori")]
         public IActionResult PopisUsera(int page)
         {
             var users = userManager.Users;
@@ -94,12 +97,6 @@ namespace CMSProductSystem.Controllers
 
             ViewBag.BrojStranica = BrojStranica;
             int aktivna;
-
-            //double BrojRedaka = modelDb.Count;
-            //int BrojStranica = (int)Math.Ceiling(BrojRedaka / 5);
-
-            //ViewBag.BrojStranica = BrojStranica;
-            //int aktivna;
 
             if (page == 0 || page == 1)
             {
@@ -116,7 +113,7 @@ namespace CMSProductSystem.Controllers
 
             return View(users);
         }
-
+        [Authorize(Roles = "Administratori")]
         public async Task<IActionResult> EditUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -133,6 +130,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         [HttpPost]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
@@ -149,6 +147,7 @@ namespace CMSProductSystem.Controllers
             return RedirectToAction("PopisUsera");
         }
 
+        [Authorize(Roles = "Administratori")]
         public async Task<IActionResult> ViewUserDetails(string id)
         {
             List<string> listaRola = new List<string>();
@@ -167,6 +166,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         public async Task<IActionResult> DeleteUserDetails(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -184,6 +184,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         public async Task<IActionResult> DeleteUserConfirm(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -201,38 +202,21 @@ namespace CMSProductSystem.Controllers
             return RedirectToAction("PopisUsera");
         }
 
-
-
-        [Route("api/PopisUseraApi")]
-        public IActionResult PopisUseraApi()
-        {
-            List<string> names = new List<string> { "Alice", "Bob", "Charlie" };
-            List<Osoba> osobe = new List<Osoba>();
-            Osoba osoba = new Osoba();
-            osoba.Id = 1;
-            osoba.Ime = "Pero";
-            osoba.Placa = 7554.25m;
-            osobe.Add(osoba);
-            osoba = new Osoba();
-            osoba.Id = 2;
-            osoba.Ime = "Ana";
-            osoba.Placa = 9554.25m;
-            osobe.Add(osoba);
-            return Json(osobe);
-        }
-
+        [Authorize(Roles = "Administratori")]
         public IActionResult PopisRola()
         {
             var roles = roleManager.Roles;
             return View(roles);
         }
 
+        [Authorize(Roles = "Administratori")]
         public IActionResult CreateRole()
         {
             CreateRoleViewModel model = new CreateRoleViewModel();
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         [HttpPost]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
@@ -253,8 +237,8 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         [HttpGet]
-        //[Authorize(Roles = "Administratori")]
         public async Task<IActionResult> EditRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);
@@ -281,6 +265,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         [HttpPost]
         public async Task<IActionResult> EditRole(EditRoleViewModel model)
         {
@@ -309,8 +294,8 @@ namespace CMSProductSystem.Controllers
 
         }
 
+        [Authorize(Roles = "Administratori")]
         [HttpGet]
-        //[Authorize(Roles = "Administratori")]
         public async Task<IActionResult> EditUsersInRole(string roleId)
         {
             ViewBag.roleId = roleId;
@@ -346,6 +331,7 @@ namespace CMSProductSystem.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Administratori")]
         [HttpPost]
         public async Task<IActionResult> EditUsersInRole(List<UserRoleViewModel> model, string roleId)
         {
@@ -386,6 +372,7 @@ namespace CMSProductSystem.Controllers
             return RedirectToAction("EditRole", new { Id = roleId });
         }
 
+        [Authorize(Roles = "Administratori")]
         public async Task<List<string>> PopisRolaZaUsera(string id)
         {
 
@@ -403,13 +390,5 @@ namespace CMSProductSystem.Controllers
             return roleUser;
         }
 
-    }
-
-    public class Osoba
-    {
-        public int Id { get; set; } 
-        public string Ime { get; set; }
-
-        public decimal Placa { get; set; }
     }
 }
