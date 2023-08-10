@@ -27,37 +27,34 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Početna</a>
                         </li>
                         @if (SignInManager.IsSignedIn(User))
                             {
                                 var user = await UserManager.FindByNameAsync(@User.Identity?.Name);
                                 if(user.Aktivan==1){
+
+                                if (User.IsInRole("Administratori"))
+                                {
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="PopisUsera">Popis usera</a>
                                     </li>
-                                    <li class="nav-item">
+                                
+                                <li class="nav-item">
                                        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="PopisRola">Popis rola</a>
                                 </li>
+                                }
+
                                 <li class="nav-item">
-                                       <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Popis proizvoda galerija</a>
-                                </li>
-                                <li class="nav-item">
-                                       <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="KategorijaProizvoda">Kategorija proizvoda</a>
+                                       <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="KategorijaProizvoda">Proizvodi (filter po kat.)</a>
                                 </li>
                                 <li class="nav-item">
                                        <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Proizvodi">Popis proizvoda lista</a>
                                 </li>
+                                <li class="nav-item">
+                                       <a class="nav-link text-dark" asp-area="" asp-controller="Kategorije" asp-action="Kategorije">Popis kategorija</a>
+                                </li>
                             }
-                            @*
-                            else
-                            {
-                                  @Url.Action("Index","Home");
-                            }
-                            *@
                         }
                     </ul>
                     <partial name="_LoginPartial" />
@@ -73,7 +70,7 @@
 
     <footer class="border-top footer text-muted footclear">
         <div class="container">
-            &copy; 2023 - CMS Product System - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - CMS Product System - <a asp-area="" asp-controller="Home" asp-action="Privacy">Odgovornost autora</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
